@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Water Music Scene</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div id="app">
+    <div class="visual" :class="active" :style="{'--fade-duration': fadeDuration + 'ms'}">
+        <div class="sky"></div>
+        <div class="sun"></div>
+        <div class="ocean">
+            <div class="wave w1"></div>
+            <div class="wave w2"></div>
+            <div class="wave w3"></div>
+        </div>
+        <div class="beach"></div>
+
+        <div class="label">{{ active === 'above' ? 'ABOVE WATER' : 'UNDERWATER' }}</div>
+
+        <div class="equalizer" :class="{ playing: isPlaying }">
+            <span v-for="n in 5" :key="n" :style="{ animationDelay: (n*0.1)+'s' }"></span>
+        </div>
+
+        <!-- moved controls into the visual so they overlay and never push content -->
+        <div class="controls">
+            <button @click="crossfade">Switch</button>
+            <button @click="togglePlay">{{ isPlaying ? 'Pause' : 'Play' }}</button>
+<!--            <label class="fade-label">-->
+<!--                Fade (ms):-->
+<!--                <input type="number" v-model.number="fadeDuration" min="100" step="100" />-->
+<!--            </label>-->
+        </div>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

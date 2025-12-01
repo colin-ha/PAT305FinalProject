@@ -1,0 +1,203 @@
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #000; }
+.visual {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background var(--fade-duration, 1000ms) ease-in-out;
+}
+.visual.above { background: linear-gradient(#6ec8ff, #1c7fe1); }
+.visual.below { background: linear-gradient(#00152a, #000915); }
+
+/* Sky layer for subtle gradient overlay transitions */
+.sky { position: absolute; inset: 0; pointer-events: none;}
+.visual.above .sky { background: radial-gradient(60% 50% at 50% 20%, rgba(255,255,255,0.35), rgba(255,255,255,0) 60%); transition: opacity var(--fade-duration, 1000ms) ease-in-out; opacity: 1; }
+.visual.below .sky { background: radial-gradient(60% 50% at 50% 20%, rgba(255,255,255,0.05), rgba(255,255,255,0) 60%); transition: opacity var(--fade-duration, 1000ms) ease-in-out; opacity: 0.6; }
+
+/* Ocean */
+.ocean {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 45vh;
+    overflow: visible;
+    transform: translateY(0);
+    /* smoother, springy-ish easing and include transform & height */
+    transition: transform var(--fade-duration, 1000ms) cubic-bezier(.22,.9,.32,1),
+                height var(--fade-duration, 1000ms) ease-in-out,
+                filter var(--fade-duration, 1000ms) ease-in-out;
+    will-change: transform, height, filter;
+}
+.visual.above .ocean { filter: none; }
+.visual.below .ocean {
+    /* grow the ocean and pull it upward so it fills the viewport */
+    height: 120vh;
+    /* move upward roughly equal to the expanded height so water reaches top */
+    transform: translateY(-75vh);
+    filter: brightness(0.85) saturate(0.9) blur(0.6px);
+}
+
+/* Waves: keep horizontal motion but add subtle vertical swell and increase scale underwater */
+.wave {
+    position: absolute; left: -50%; right: -50%;
+    height: 120%;
+    background-repeat: repeat-x;
+    opacity: 0.6;
+    animation: waveMove 12s linear infinite, waveSwell 6s ease-in-out infinite;
+    will-change: transform, opacity, filter;
+}
+.visual.below .wave {
+    /* more pronounced, slightly blurrier and deeper colors underwater */
+    filter: blur(1px);
+    transform-origin: center center;
+    opacity: 0.95;
+    animation-duration: 10s, 6s;
+    mix-blend-mode: screen;
+}
+.w1 { bottom: 0; background-image: radial-gradient(50px 14px at 50px 7px, rgba(255,255,255,0.45) 38%, rgba(255,255,255,0) 40%), linear-gradient(#2cb2ff, #0f78d1); animation-duration: 14s; opacity: 0.5; }
+.w2 { bottom: -10px; background-image: radial-gradient(40px 12px at 40px 6px, rgba(255,255,255,0.35) 38%, rgba(255,255,255,0) 40%), linear-gradient(#1f8dd6, #0c63a8); animation-duration: 12s; opacity: 0.7; }
+.w3 { bottom: -20px; background-image: radial-gradient(30px 10px at 30px 5px, rgba(255,255,255,0.32) 38%, rgba(255,255,255,0) 40%), linear-gradient(#156aa8, #0a4c80); animation-duration: 10s; opacity: 0.9; }
+
+@keyframes waveMove {
+    0% { transform: translateX(0) translateZ(0) scaleY(1); }
+    100% { transform: translateX(-25%) translateZ(0) scaleY(1); }
+}
+@keyframes waveSwell {
+    0% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-6px) scaleY(1.06); }
+    100% { transform: translateY(0) scaleY(1); }
+}
+
+/* Beach */
+.beach {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 14vh;
+    background: linear-gradient(180deg, #f8e39a, #e2c86a 60%, #caa24a);
+    box-shadow: 0 -6px 18px rgba(0,0,0,0.15) inset;
+    transition: transform calc(var(--fade-duration, 1000ms) * 0.7) ease-in-out,
+                opacity var(--fade-duration, 1000ms) ease-in-out,
+                filter var(--fade-duration, 1000ms) ease-in-out;
+    will-change: transform, opacity;
+    z-index: 1;
+}
+.visual.above .beach { transform: translateY(0); opacity: 1; filter: none; }
+.visual.below .beach {
+    /* slide the beach downward a bit and fade it gently to suggest submerging */
+    transform: translateY(30%);
+    opacity: 0;
+    filter: blur(1px) saturate(0.7);
+    pointer-events: none;
+}
+
+/* Sun */
+.sun {
+    position: absolute;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff7b1, #ffd36e 40%, #ff9f3e 70%, rgba(255,159,62,0.0) 72%);
+    box-shadow: 0 0 60px 20px rgba(255, 208, 0, 0.35);
+    left: 12%;
+    transform: translate(-50%, -50%);
+    transition: top var(--fade-duration, 1000ms) cubic-bezier(.22,.9,.32,1),
+                opacity var(--fade-duration, 1000ms) ease-in-out,
+                filter var(--fade-duration, 1000ms) ease-in-out;
+    z-index: 2;
+}
+.visual.above .sun { top: 25%; opacity: 1; filter: none; }
+.visual.below .sun { top: 120%; opacity: 0; filter: blur(8px) saturate(0.6); }
+
+/* ensure full-height and no scrolling */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* restore big bold spaced-out label in the center */
+.label {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 800;
+    letter-spacing: 0.45rem;
+    text-transform: uppercase;
+    font-size: clamp(20px, 6vw, 64px);
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.05);
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* controls overlay that feels part of the scene */
+.controls {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    z-index: 8;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    padding: 8px 14px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px) saturate(0.9);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* button styles inside controls */
+.controls button {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+}
+.controls button:hover { background: rgba(255,255,255,0.12); }
+
+/* make sure visual children keep stacking order */
+.equalizer { z-index: 7; }
+
+/* Beach */
+.beach {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 14vh;
+    background: linear-gradient(180deg, #f8e39a, #e2c86a 60%, #caa24a);
+    box-shadow: 0 -6px 18px rgba(0,0,0,0.15) inset;
+    transition: transform calc(var(--fade-duration, 1000ms) * 0.7) ease-in-out,
+                opacity var(--fade-duration, 1000ms) ease-in-out,
+                filter var(--fade-duration, 1000ms) ease-in-out;
+    will-change: transform, opacity;
+    z-index: 1;
+}
+.visual.above .beach { transform: translateY(0); opacity: 1; filter: none; }
+.visual.below .beach {
+    /* slide the beach downward a bit and fade it gently to suggest submerging */
+    transform: translateY(30%);
+    opacity: 0;
+    filter: blur(1px) saturate(0.7);
+    pointer-events: none;
+}
+
+/* Sun */
+.sun {
+    position: absolute;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff7b1, #ffd36e 40%, #ff9f3e 70%, rgba(255,159,62,0.0) 72%);
+    box-shadow: 0 0 60px 20px rgba(255, 208, 0, 0.35);
+    left: 12%;
+    transform: translate(-50%, -50%);
+    transition: top var(--fade-duration, 1000ms) cubic-bezier(.22,.9,.32,1),
+                opacity var(--fade-duration, 1000ms) ease-in-out,
+                filter var(--fade-duration, 1000ms) ease-in-out;
+    z-index: 2;
+}
+.visual.above .sun { top: 25%; opacity: 1; filter: none; }
+.visual.below .sun { top: 120%; opacity: 0; filter: blur(8px) saturate(0.6); }
+
+/* Label and equalizer z-index tweaks so waves can feel above/below appropriately */
+.label { z-index: 4; }
+.equalizer { z-index: 4; }
