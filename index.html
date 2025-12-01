@@ -16,22 +16,42 @@
             <div class="wave w2"></div>
             <div class="wave w3"></div>
         </div>
+
+        <!-- moved sea-life here so it starts at the visual's bottom (atop the beach) -->
+        <div class="sea-life" aria-hidden="true">
+            <!-- algae anchored at seabed -->
+            <div class="algae a1"></div>
+            <div class="algae a2"></div>
+            <div class="algae a3"></div>
+            <div class="algae a4"></div>
+
+            <!-- fish that swim across when underwater -->
+            <div class="fish f1"></div>
+            <div class="fish f2"></div>
+            <div class="fish f3"></div>
+
+            <!-- bubbles rising from the seabed -->
+            <div class="bubbles">
+                <span class="bubble b1"></span>
+                <span class="bubble b2"></span>
+                <span class="bubble b3"></span>
+                <span class="bubble b4"></span>
+                <span class="bubble b5"></span>
+            </div>
+        </div>
+
         <div class="beach"></div>
 
         <div class="label">{{ active === 'above' ? 'ABOVE WATER' : 'UNDERWATER' }}</div>
 
-        <div class="equalizer" :class="{ playing: isPlaying }">
-            <span v-for="n in 5" :key="n" :style="{ animationDelay: (n*0.1)+'s' }"></span>
+        <!-- moved controls to sit directly below the label -->
+        <div class="controls controls--center">
+            <button class="big" @click="crossfade">Switch</button>
+            <button class="big" @click="togglePlay">{{ isPlaying ? 'Pause' : 'Play' }}</button>
         </div>
 
-        <!-- moved controls into the visual so they overlay and never push content -->
-        <div class="controls">
-            <button @click="crossfade">Switch</button>
-            <button @click="togglePlay">{{ isPlaying ? 'Pause' : 'Play' }}</button>
-<!--            <label class="fade-label">-->
-<!--                Fade (ms):-->
-<!--                <input type="number" v-model.number="fadeDuration" min="100" step="100" />-->
-<!--            </label>-->
+        <div class="equalizer" :class="{ playing: isPlaying }">
+            <span v-for="n in 5" :key="n" :style="{ animationDelay: (n*0.1)+'s' }"></span>
         </div>
     </div>
 

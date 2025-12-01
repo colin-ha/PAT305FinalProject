@@ -6,7 +6,8 @@ createApp({
         const active = ref('above')
         // ms
         const fadeDuration = ref(1000)
-        const isPlaying = ref(true)
+        // start not playing
+        const isPlaying = ref(false)
 
         let audioCtx = null
         let aboveBuffer = null
