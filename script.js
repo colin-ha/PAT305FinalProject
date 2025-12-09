@@ -12,6 +12,7 @@ createApp({
         let audioCtx = null
         let aboveBuffer = null
         let belowBuffer = null
+        let splashBuffer = null           // <-- added: buffer for one-shot splash
         let aboveSource = null
         let belowSource = null
         let aboveGain = null
@@ -54,6 +55,7 @@ createApp({
             // load buffers (non-blocking if files missing)
             aboveBuffer = await loadBuffer('audio/above.wav')
             belowBuffer = await loadBuffer('audio/below.wav')
+            splashBuffer = await loadBuffer('audio/splash.wav') // <-- load splash
 
             // create sources/gains; start them immediately as looping sources
             const aboveNodes = createLoopingNodes(aboveBuffer, 1)
@@ -77,12 +79,35 @@ createApp({
             })
         })
 
+        // helper to play one-shot splash sound
+        function playSplash() {
+            if (!audioCtx) return
+            if (!splashBuffer) return
+            // ensure context running (user gesture will usually have resumed it already)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {})
+            }
+            const src = audioCtx.createBufferSource()
+            src.buffer = splashBuffer
+            const g = audioCtx.createGain()
+            // quick fade-out to avoid abrupt cutoff if needed
+            g.gain.setValueAtTime(1, audioCtx.currentTime)
+            src.connect(g).connect(audioCtx.destination)
+            src.start()
+            src.onended = () => {
+                try { src.disconnect(); g.disconnect(); } catch (e) {}
+            }
+        }
+
         function crossfade() {
             const next = active.value === 'above' ? 'below' : 'above'
 
             // set visuals immediately so the water-rise animation and beach fade
             // happen in sync with the audio crossfade.
             active.value = next
+
+            // play the splash sound for tactile feedback on every switch
+            playSplash() // <-- play splash on switch
 
             const durSec = Math.max(0.001, Number.isFinite(fadeDuration.value) ? fadeDuration.value / 1000 : 1)
             const now = audioCtx ? audioCtx.currentTime : 0
