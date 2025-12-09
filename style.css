@@ -297,5 +297,91 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-
     color: #04232b;
 }
 
-/* ensure the label has room and remains above the controls */
-.label { z-index: 10; }
+/* progress slider / time readout (centered under the controls) */
+.progress {
+    background-color: #0984e3;
+    border-radius: 20px;
+    padding: 20px;
+    position: absolute;
+    left: 50%;
+    top: calc(12% + 40.2vh); /* just under the controls; tuned to match controls--center */
+    transform: translateX(-50%);
+    width: min(70vw, 760px);
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    pointer-events: auto;
+}
+
+/* wide, tall slider that's touch-friendly */
+.progress input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));
+    border-radius: 999px;
+    padding: 0;
+    outline: none;
+}
+
+/* thumb */
+.progress input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(180deg,#fffef0,#ffd77a);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    border: none;
+    cursor: pointer;
+}
+.progress input[type="range"]::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(180deg,#fffef0,#ffd77a);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    border: none;
+}
+
+/* track height (Firefox) */
+.progress input[type="range"]::-moz-range-track {
+    height: 16px;
+    background: transparent;
+}
+
+/* times readout */
+.progress .times {
+    display:flex;
+    justify-content: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+
+/* small separator */
+.progress .sep { opacity: 0.6; font-weight: 600; }
+
+/* ensure this overlay doesn't block the label or controls visually */
+.controls--center { z-index: 10; }
+.label { z-index: 11; }
+
+.footer{
+    padding: 5px;
+    border-radius: 20px 20px 0 0;
+    color: lightgray;
+    position: absolute;
+    z-index: 9999;
+    background-color: rgba(1,1,1,0.3);
+    bottom: 0;
+    text-align: center;
+}
+.footer p{
+    margin: 2px;
+}
